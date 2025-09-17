@@ -8,16 +8,26 @@ LABEL org.opencontainers.image.title="Holy Unblocker LTS" \
       org.opencontainers.image.authors="Holy Unblocker Team" \
       org.opencontainers.image.source="https://github.com/QuiteAFancyEmerald/Holy-Unblocker/"
 
-RUN apk add --no-cache tor bash
+# Install system dependencies
+RUN apt-get update && apt-get install -y tor bash curl git python3 g++ make && rm -rf /var/lib/apt/lists/*
 
+# Copy package.json & package-lock.json first
+COPY package*.json ./
+
+# Install Node dependencies
+RUN npm install --production
+
+# Copy source code
 COPY . .
 
-RUN npm install --production
+# Build the project
 RUN npm run build
 
-EXPOSE 8080 9050 9051
+# Expose HTTP port
+ENV PORT=8080
+EXPOSE 8080
 
+# Serve
 COPY serve.sh /serve.sh
 RUN chmod +x /serve.sh
-
 CMD ["/serve.sh"]
