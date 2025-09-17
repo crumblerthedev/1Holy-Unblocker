@@ -12,7 +12,7 @@ RUN apk add --no-cache tor bash
 
 COPY . .
 
-RUN npm run install
+RUN npm install --production
 RUN npm run build
 
 EXPOSE 8080 9050 9051
